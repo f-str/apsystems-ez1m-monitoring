@@ -1,0 +1,184 @@
+{
+	"info": {
+		"_postman_id": "d1ec60dd-e906-4280-9a34-467a827f903c",
+		"name": "APsystems-EZ1-M",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33499164"
+	},
+	"item": [
+		{
+			"name": "Get EZ1 Device Information",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/getDeviceInfo",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"getDeviceInfo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Current Output Data of EZ1 Inverter Device",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/getOutputData",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"getOutputData"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Max Power of EZ1 Inverter Device",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/getMaxPower",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"getMaxPower"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set Max Power of EZ1 Inverter Device",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/setMaxPower?g=600",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"setMaxPower"
+					],
+					"query": [
+						{
+							"key": "g",
+							"value": "600"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Alarm Information of EZ1 Inverter Device",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/getAlarm",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"getAlarm"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get device On/Off status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/getOnOff",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"getOnOff"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set device On/Off status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/setOnOff?status=0",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"setOnOff"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "0",
+							"description": "0 = ON; 1 = OFF"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "IP",
+			"value": "192.168.178.10",
+			"type": "string"
+		},
+		{
+			"key": "PORT",
+			"value": "8050",
+			"type": "string"
+		},
+		{
+			"key": "PROTOCOL",
+			"value": "http",
+			"type": "string"
+		},
+		{
+			"key": "URL",
+			"value": "{{PROTOCOL}}://{{IP}}:{{PORT}}",
+			"type": "string"
+		}
+	]
+}
