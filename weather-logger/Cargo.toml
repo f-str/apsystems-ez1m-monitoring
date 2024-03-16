@@ -1,0 +1,22 @@
+[package]
+name = "weather-logger"
+version = "1.0.0"
+description = "Weather logger using the OpenWeatherMap API"
+authors = ["Florian Straubinger <github@f-str.de>"]
+license-file = "../LICENSE"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+apsystems-ez1m-util = { path = "../apsystems-ez1m-util" }
+log = "0.4.21"
+pretty_env_logger = "0.5.0"
+reqwest = { version = "0.11.25", features = ["json"] }
+serde = "1.0.197"
+serde_json = "1.0.114"
+tokio-postgres = "0.7.10"
+sqlx = { version = "0.7.2", features = [ "runtime-tokio", "tls-rustls", "postgres", "uuid" ] }
+uuid = { version = "1.5.0", features = ["v4"] }
+refinery = { version = "0.8.11", features = ["tokio-postgres"]}
+tokio = { version = "1.36.0", features = ["full"] }

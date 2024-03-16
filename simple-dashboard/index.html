@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Balkonkraftwerk - Aktuelle Leistung</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .panel {
+            margin-top: 20px;
+        }
+
+        .panel-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .total-power-value {
+            margin-top: 50px;
+            font-size: 45px;
+            color: #4caf50;
+        }
+
+        .power-value {
+            font-size: 20px;
+            color: #4caf50;
+        }
+
+        .panel-value {
+            font-size: 20px;
+            color: #4caf50;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="panel">
+        <p class="total-power-value" id="total-power-value">0 Watt</p>
+    </div>
+    <div class="panel">
+        <p class="panel-title">Solarpanel 1</p>
+        <p class="power-value" id="power-value-panel1">0 Watt</p>
+    </div>
+    <div class="panel">
+        <p class="panel-title">Solarpanel 2</p>
+        <p class="power-value" id="power-value-panel2">0 Watt</p>
+    </div>
+    <div class="panel">
+        <p class="panel-title">Am Tag produziert</p>
+        <p class="panel-value" id="daily-energy-value">0 kWh</p>
+    </div>
+    <div class="panel">
+        <p class="panel-title">Insgesamt produziert</p>
+        <p class="panel-value" id="total-energy-value">0 kWh</p>
+    </div>
+
+    <script>
+        function updateValues() {
+            fetch("http://192.168.179.10:8050/getOutputData")
+                .then((response) => response.json())
+                .then((data) => {
+                    var powerPanel1 = data.data.p1;
+                    var energyPanel1 = data.data.e1;
+                    var totalEnergyPanel1 = data.data.te1;
+                    var powerPanel2 = data.data.p2;
+                    var energyPanel2 = data.data.e2;
+                    var totalEnergyPanel2 = data.data.te2;
+
+                    var totalPower = powerPanel1 + powerPanel2;
+
+                    document.getElementById("total-power-value").innerText =
+                        totalPower + " Watt";
+                    document.getElementById("power-value-panel1").innerText =
+                        powerPanel1 + " Watt";
+                    document.getElementById("power-value-panel2").innerText =
+                        powerPanel2 + " Watt";
+                    document.getElementById("daily-energy-value").innerText =
+                        energyPanel1 + energyPanel2 + " kWh";
+                    document.getElementById("total-energy-value").innerText =
+                        totalEnergyPanel1 + totalEnergyPanel2 + " kWh";
+                })
+                .catch((error) => {
+                    console.error("Fehler beim Abrufen der Daten:", error);
+                });
+        }
+
+        function startDataRefresh() {
+            updateValues();
+            setInterval(updateValues, 60000); // Refreshes every 60 seconds
+        }
+
+        window.onload = startDataRefresh;
+    </script>
+</body>
+
+</html>
