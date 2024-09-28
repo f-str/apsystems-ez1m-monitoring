@@ -82,15 +82,15 @@
                     var totalPower = powerPanel1 + powerPanel2;
 
                     document.getElementById("total-power-value").innerText =
-                        totalPower + " Watt";
+                        totalPower.toFixed(2) + " Watt";
                     document.getElementById("power-value-panel1").innerText =
-                        powerPanel1 + " Watt";
+                        powerPanel1.toFixed(2) + " Watt";
                     document.getElementById("power-value-panel2").innerText =
-                        powerPanel2 + " Watt";
+                        powerPanel2.toFixed(2) + " Watt";
                     document.getElementById("daily-energy-value").innerText =
-                        energyPanel1 + energyPanel2 + " kWh";
+                        (energyPanel1 + energyPanel2).toFixed(2) + " kWh";
                     document.getElementById("total-energy-value").innerText =
-                        totalEnergyPanel1 + totalEnergyPanel2 + " kWh";
+                        (totalEnergyPanel1 + totalEnergyPanel2).toFixed(2) + " kWh";
                 })
                 .catch((error) => {
                     console.error("Fehler beim Abrufen der Daten:", error);
