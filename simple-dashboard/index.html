@@ -81,6 +81,9 @@
 
                     var totalPower = powerPanel1 + powerPanel2;
 
+                    var totalEnergy = (totalEngergyPanel1 + totalEngergyPanel2).toFixed(2) + " kWh";
+                    localStorage.setItem("totalEnergy", totalEnergy)
+
                     document.getElementById("total-power-value").innerText =
                         totalPower.toFixed(2) + " Watt";
                     document.getElementById("power-value-panel1").innerText =
@@ -89,11 +92,12 @@
                         powerPanel2.toFixed(2) + " Watt";
                     document.getElementById("daily-energy-value").innerText =
                         (energyPanel1 + energyPanel2).toFixed(2) + " kWh";
-                    document.getElementById("total-energy-value").innerText =
-                        (totalEnergyPanel1 + totalEnergyPanel2).toFixed(2) + " kWh";
+                    document.getElementById("total-energy-value").innerText = totalEnergy;
                 })
                 .catch((error) => {
                     console.error("Fehler beim Abrufen der Daten:", error);
+                    var totalEnergy = localStorage.getItem("totalEnergy");
+                    document.getElementById("total-energy-value").innerText = totalEnergy;
                 });
         }
 
