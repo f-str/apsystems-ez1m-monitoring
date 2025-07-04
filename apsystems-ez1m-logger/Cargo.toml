@@ -4,7 +4,7 @@ version = "1.0.0"
 description = "APsystems EZ1-M data logger"
 authors = ["Florian Straubinger <github@f-str.de>"]
 license-file = "../LICENSE"
-edition = "2021"
+edition = "2024"
 
 
 [dependencies]
@@ -19,3 +19,5 @@ sqlx = { version = "0.8.2", features = [ "runtime-tokio", "tls-rustls", "postgre
 uuid = { version = "1.10.0", features = ["v4"] }
 refinery = { version = "0.8.14", features = ["tokio-postgres"]}
 tokio = { version = "1.40.0", features = ["full"] }
+thiserror = "2.0.12"
+

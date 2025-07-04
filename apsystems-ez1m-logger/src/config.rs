@@ -7,7 +7,6 @@ pub struct Config {
     pub url: String,
     pub timeout: u64,
     pub db_config: DbConfig,
-    pub device_id: Option<String>,
 }
 
 impl Config {
@@ -19,10 +18,6 @@ impl Config {
                 .parse()
                 .expect("TIMEOUT must be a number"),
             db_config: DbConfig::from_env(),
-            device_id: match env::var("DEVICE_ID") {
-                Ok(device_id) => Some(device_id),
-                Err(_) => None,
-            },
         }
     }
 }

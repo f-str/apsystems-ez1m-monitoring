@@ -1,10 +1,16 @@
 use std::{error::Error, time::Duration};
 
 use apsystems_ez1m_util::db::pool::{initialize_connection_pool, DbPool};
-use log::error;
 use reqwest::Client;
+use thiserror::Error;
 
 use crate::{config::Config, model::CurrentOutput};
+
+#[derive(Debug, Error)]
+pub enum ServiceError {
+    #[error("Failed to parse response from device to model.")]
+    ResponseParseError,
+}
 
 pub async fn worker_loop(config: &Config) -> Result<(), Box<dyn Error>> {
     let client = reqwest::Client::new();
@@ -20,21 +26,22 @@ pub async fn worker_loop(config: &Config) -> Result<(), Box<dyn Error>> {
             let client = client.clone();
             let connection_pool = connection_pool.clone();
             async move {
-                perform_operation(&config, &client, &connection_pool).await;
+                let _ = perform_operation(&config, &client, &connection_pool).await;
             }
         });
     }
 }
 
-async fn perform_operation(config: &Config, client: &Client, connection_pool: &DbPool) {
-    let data = match get_data(config, client).await {
+async fn perform_operation(config: &Config, client: &Client, connection_pool: &DbPool) -> Result<(), Box<dyn Error>> {
+    let data = match get_data(config, client).await? {
         Some(data) => data,
-        None => return,
+        None => return Ok(()),
     };
-    write_data_to_db(connection_pool, &data).await;
+    let _ = write_data_to_db(connection_pool, &data).await?;
+    Ok(())
 }
 
-async fn get_data(config: &Config, client: &Client) -> Option<CurrentOutput> {
+async fn get_data(config: &Config, client: &Client) -> Result<Option<CurrentOutput>, ServiceError> {
     let response = client
         .get(format!("{}/getOutputData", config.url).as_str())
         .send()
@@ -43,53 +50,35 @@ async fn get_data(config: &Config, client: &Client) -> Option<CurrentOutput> {
 
     match response.status() {
         reqwest::StatusCode::OK => {
-            let response = response.json::<CurrentOutput>().await;
-            match response {
-                Ok(response) => {
-                    return Some(response);
-                }
-                Err(e) => {
-                    error!("Failed to parse response: {:?}", e);
-                }
+            match response.json::<CurrentOutput>().await {
+                Ok(data) => Ok(Some(data)),
+                Err(_e) => Err(ServiceError::ResponseParseError),
             }
         }
-        _ => {
-            if let Some(device_id) = &config.device_id {
-                return Some(CurrentOutput::new(device_id, &String::from("OFFLINE")));
-            } else {
-                error!(
-                    "Failed to get data from the server: {:?}",
-                    response.status()
-                );
-            }
-        }
-    };
-
-    None
+        _ => Ok(None)
+    }
 }
 
-async fn write_data_to_db(connection_pool: &DbPool, current_output: &CurrentOutput) {
-    let result = sqlx::query(
+async fn write_data_to_db(connection_pool: &DbPool, current_output: &CurrentOutput) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+    sqlx::query(
         r#"
-            INSERT INTO ez1m_data(p1, e1, te1, p2, e2, te2, message, device_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            INSERT INTO data_ez1m(device_id, value_key, double_value)
+            VALUES 
+                ($1, 'p1', $2), 
+                ($1, 'e1', $3), 
+                ($1, 'te1', $4), 
+                ($1, 'p2', $5), 
+                ($1, 'e2', $6), 
+                ($1, 'te2', $7);
             "#,
     )
+    .bind(current_output.device_id.as_str())
     .bind(current_output.data.p1)
     .bind(current_output.data.e1)
     .bind(current_output.data.te1)
     .bind(current_output.data.p2)
     .bind(current_output.data.e2)
     .bind(current_output.data.te2)
-    .bind(current_output.message.as_str())
-    .bind(current_output.device_id.as_str())
     .execute(connection_pool)
-    .await;
-
-    match result {
-        Ok(_) => {}
-        Err(e) => {
-            error!("Error while creating message topic: {}", e);
-        }
-    }
+    .await
 }
