@@ -1,0 +1,16 @@
+services:
+  db:
+    image: timescale/timescaledb:latest-pg17
+    container_name: timescale_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: <pwd>
+      POSTGRES_DB: timeseries
+    volumes:
+    - timescale_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    restart: unless-stopped
+
+volumes:
+  timescale_data:
