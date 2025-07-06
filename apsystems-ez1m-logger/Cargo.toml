@@ -20,4 +20,4 @@ uuid = { version = "1.10.0", features = ["v4"] }
 refinery = { version = "0.8.14", features = ["tokio-postgres"]}
 tokio = { version = "1.40.0", features = ["full"] }
 thiserror = "2.0.12"
-
+openssl = { version = "0.10", features = ["vendored"] }

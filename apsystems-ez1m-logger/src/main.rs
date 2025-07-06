@@ -9,6 +9,7 @@ use crate::service::worker_loop;
 
 #[tokio::main]
 async fn main() {
+    pretty_env_logger::init();
     let config = Config::from_env();
     run_migrations(&config.db_config)
         .await

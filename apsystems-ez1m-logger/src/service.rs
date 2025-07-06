@@ -1,6 +1,7 @@
 use std::{error::Error, time::Duration};
 
 use apsystems_ez1m_util::db::pool::{initialize_connection_pool, DbPool};
+use log::warn;
 use reqwest::Client;
 use thiserror::Error;
 
@@ -10,6 +11,8 @@ use crate::{config::Config, model::CurrentOutput};
 pub enum ServiceError {
     #[error("Failed to parse response from device to model.")]
     ResponseParseError,
+    #[error("Failed to reach host.")]
+    HostNotReachableError,
 }
 
 pub async fn worker_loop(config: &Config) -> Result<(), Box<dyn Error>> {
@@ -25,8 +28,11 @@ pub async fn worker_loop(config: &Config) -> Result<(), Box<dyn Error>> {
             let config = config.clone();
             let client = client.clone();
             let connection_pool = connection_pool.clone();
-            async move {
-                let _ = perform_operation(&config, &client, &connection_pool).await;
+            async move{
+                match perform_operation(&config, &client, &connection_pool).await {
+                    Ok(_) => (),
+                    Err(_e) => warn!("{_e}")
+                }
             }
         });
     }
@@ -45,8 +51,7 @@ async fn get_data(config: &Config, client: &Client) -> Result<Option<CurrentOutp
     let response = client
         .get(format!("{}/getOutputData", config.url).as_str())
         .send()
-        .await
-        .unwrap();
+        .await.map_err(|_e| ServiceError::HostNotReachableError)?;
 
     match response.status() {
         reqwest::StatusCode::OK => {
